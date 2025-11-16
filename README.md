@@ -115,18 +115,34 @@ npx wrangler secret put GEMINI_API_KEY
 
 6. Deploy by pushing to `main` (Action will run) or run `npm run deploy:worker` locally.
 
+Note about Wrangler commands:
+
+Recent versions of the `wrangler` CLI use the `publish` subcommand rather than `deploy`. If you see an error such as `Unknown argument: deploy` in your build logs, replace `wrangler deploy` with `wrangler publish` or use the npm script provided in this repo:
+
+```bash
+# publish the Worker using the wrangler CLI
+npx wrangler publish
+# or use the npm alias in this repo
+npm run publish
+```
+
+If your CI or another tool is running `npx wrangler deploy`, update it to `npx wrangler publish`.
+
 Automatically configuring the frontend to use your Worker
 
-After you publish the Worker, you'll have a workers.dev URL (for example `https://cloudassistant-worker.janedoe.workers.dev`). To make the frontend call that worker without rebuilding, update `public/worker-config.json` with the deployed URL.
 
-For convenience we've added a tiny script:
+After you publish the Worker, you'll have a workers.dev URL (for example `https://cloudassistant-worker.janedoe.workers.dev`). To make the frontend call that worker without rebuilding, create a `public/worker-config.json` file containing your deployed URL.
+
+For convenience we've added a tiny script to create that (local-only) file:
 
 ```bash
 # from the repo root
 npm run set-worker-base -- https://cloudassistant-worker.janedoe.workers.dev
 ```
 
-This writes `public/worker-config.json` and the Pages site will fetch it at runtime. If you deploy the `public/` folder to Cloudflare Pages, the site will start using the Worker URL immediately (no rebuild required).
+Important: the repo intentionally ignores `public/worker-config.json` (see `.gitignore`) so it is safe to create locally without committing it to GitHub. Instead, we've committed `public/worker-config.example.json` as a template you can copy or use with the script.
+
+This approach ensures no Google Drive content, tokens, or other secrets are stored in the repository. Always set credentials/secrets using `wrangler secret put` or GitHub repository secrets — never commit them.
 
 
 Running locally for development

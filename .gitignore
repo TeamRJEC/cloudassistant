@@ -1,0 +1,7 @@
+/node_modules
+/public/worker-config.json
+.env
+.secrets
+/data
+.wrangler
+.DS_Store
